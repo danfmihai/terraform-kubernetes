@@ -3,7 +3,7 @@ resource "proxmox_vm_qemu" "k8_node" {
   desc        = "Terraform k8s node(s) provision for PROXMOX"
   agent       = 1
   os_type     = "cloud-init"
-  name        = "k8-node-${var.img_type}-${count.index + 1}"
+  name        = "k8-${var.img_type}-node${count.index + 1}"
   target_node = var.proxmox_host
   clone       = "${var.img_type}-cloudinit-template"
   full_clone  = true
@@ -14,9 +14,10 @@ resource "proxmox_vm_qemu" "k8_node" {
   bootdisk    = "scsi0"
   scsihw      = "virtio-scsi-pci"
   
+  
   disk {
     slot         = 0
-    size         = "10G"
+    size         = "25G"
     type         = "scsi"
     storage      = "nvme"
     # storage_type = "scsi"
@@ -42,6 +43,28 @@ resource "proxmox_vm_qemu" "k8_node" {
   #EOF
   sshkeys = <<EOF
   ${var.ssh_key1}
-  EOF
+  EOF  
+
+  provisioner "file" {
+    source      = "scripts/get_ready_for_k8.sh"
+    destination = "/tmp/script.sh"
+
+    connection {
+        type        = "ssh"
+        private_key = "${var.ssh_key1}"
+        timeout     = "20s"
+        user        = "${var.img_type}"
+        host        = "${self.ssh_host}"
+    }
+
+  }
+  
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/script.sh",
+      "/tmp/script.sh",
+    ]
+
+  }
 
 }

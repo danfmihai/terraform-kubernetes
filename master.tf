@@ -3,7 +3,7 @@ resource "proxmox_vm_qemu" "k8_master" {
   desc        = "Terraform master(s) provision for PROXMOX"
   agent       = 1
   os_type     = "cloud-init"
-  name        = "k8-master-${var.img_type}-${count.index + 1}"
+  name        = "k8-${var.img_type}-master${count.index + 1}"
   target_node = var.proxmox_host
   clone       = "${var.img_type}-cloudinit-template"
   full_clone  = true
@@ -16,7 +16,7 @@ resource "proxmox_vm_qemu" "k8_master" {
   
   disk {
     slot         = 0
-    size         = "10G"
+    size         = "15G"
     type         = "scsi"
     storage      = "nvme"
     # storage_type = "scsi"

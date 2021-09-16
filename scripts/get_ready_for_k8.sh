@@ -53,5 +53,9 @@ echo "Creating autocomplete for the node ..."
 
 source <(kubectl completion bash)
 echo "source <(kubectl completion bash)" >> ~/.bashrc
+echo "alias k=kubectl" >> ~/.bashrc
+echo "complete -F __start_kubectl k" >> ~/.bashrc
+source ~/.bashrc
+echo "you can use command k instead of kubectl now." 
 
 echo "Done."
