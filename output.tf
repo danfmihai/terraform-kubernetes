@@ -9,6 +9,7 @@ output "master_ip" {
 
 output "node_id" {
   value       = proxmox_vm_qemu.k8_node.*.id
+  
   description = "The id of the master."
 }
 
